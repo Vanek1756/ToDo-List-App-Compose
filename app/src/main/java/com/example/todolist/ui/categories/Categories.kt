@@ -26,7 +26,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,6 +38,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import com.example.todolist.MainNavOption
 import com.example.todolist.R
 import com.example.todolist.storage.entity.CategoryEntity
 import com.example.todolist.ui.components.appbar.AppBar
@@ -46,6 +51,7 @@ import com.example.todolist.ui.utils.State
 @Composable
 fun CategoriesScreen(
     drawerState: DrawerState,
+    navController: NavController,
     viewModel: CategoriesViewModel = hiltViewModel()
 ) {
     Scaffold(
@@ -59,15 +65,23 @@ fun CategoriesScreen(
             CategoriesContent(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.secondary),
-                viewModel
+                    .paint(
+                        painter = painterResource(id = R.drawable.ic_background_app),
+                        contentScale = ContentScale.FillBounds
+                    ),
+                viewModel,
+                navController
             )
         }
     }
 }
 
 @Composable
-private fun CategoriesContent(modifier: Modifier, viewModel: CategoriesViewModel) {
+private fun CategoriesContent(
+    modifier: Modifier,
+    viewModel: CategoriesViewModel,
+    navController: NavController
+) {
     Column(modifier = modifier) {
         MyCategoriesTitleText()
         val categoriesItems by viewModel.getCategoriesStateFlow().collectAsStateWithLifecycle()
@@ -77,7 +91,7 @@ private fun CategoriesContent(modifier: Modifier, viewModel: CategoriesViewModel
                 // TODO() Edit category
             },
             onCreateCategoryButtonClick = {
-                // TODO() Create category
+                navController.navigate(MainNavOption.AddNewCategory.name)
             }
         )
     }

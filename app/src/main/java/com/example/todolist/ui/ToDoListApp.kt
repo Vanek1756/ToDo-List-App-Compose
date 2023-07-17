@@ -28,7 +28,7 @@ fun ToDoListApp(
     navController: NavHostController = rememberNavController(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 ) {
-    Surface{
+    Surface {
 
         // the main drawer composable, which creates the actual drawer
         ModalNavigationDrawer(
@@ -38,19 +38,24 @@ fun ToDoListApp(
                     drawerState = drawerState,
                     menuItems = DrawerParams.drawerButtons,
                     defaultPick = MainNavOption.Home
-                ) { onUserPickedOption  ->
+                ) { onUserPickedOption ->
                     // when user picks, the path - navigates to new one
-                    when (onUserPickedOption ) {
+                    when (onUserPickedOption) {
                         MainNavOption.Home -> {
                             navController.navigate(onUserPickedOption.name) {
                                 // pops the route to root and places new screen
-                                popUpTo("MainRoute")
+                                popUpTo(MainNavOption.Home.name)
                             }
                         }
+
                         MainNavOption.Categories -> {
                             navController.navigate(onUserPickedOption.name) {
-                                popUpTo("MainRoute")
+                                popUpTo(MainNavOption.Home.name)
                             }
+                        }
+
+                        else -> {
+
                         }
                     }
                 }
@@ -60,7 +65,7 @@ fun ToDoListApp(
                 navController = navController,
                 startDestination = "MainRoute"
             ) {
-                mainGraph(drawerState)
+                mainGraph(drawerState, navController)
             }
         }
     }

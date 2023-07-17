@@ -2,7 +2,6 @@ package com.example.todolist.ui.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,7 +18,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -31,6 +29,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -65,7 +67,11 @@ fun HomeScreen(
             HomeContent(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.secondary),
+                    .paint(
+                        painter = painterResource(id = R.drawable.ic_background_app),
+                        contentScale = ContentScale.FillBounds
+                    ),
+
                 viewModel
             )
         }
@@ -129,7 +135,7 @@ private fun CategoriesRow(
 @Composable
 private fun TabScreen() {
     val tabs = stringArrayResource(id = R.array.home_tab_bar)
-    val pagerState = rememberPagerState(initialPage = tabs.size)
+    val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
 
 
@@ -137,19 +143,24 @@ private fun TabScreen() {
         Spacer(modifier = Modifier.height(16.dp))
         TabRow(
             selectedTabIndex = pagerState.currentPage,
-            containerColor = MaterialTheme.colorScheme.secondary,
+            containerColor = Color.Transparent,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp),
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
                     Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
-                    color = MaterialTheme.colorScheme.primary
+                    color = Color(android.graphics.Color.parseColor("#e1d4f1"))
                 )
             },
             divider = { DividerDefaults }
         ) {
             tabs.forEachIndexed { index, title ->
                 Tab(
-                    text = { Text(title) },
+                    text = {
+                        Text(
+                            title,
+                            color = if (pagerState.currentPage == index) Color.Black else Color.Gray
+                        )
+                    },
                     selected = pagerState.currentPage == index,
                     onClick = {
                         scope.launch {

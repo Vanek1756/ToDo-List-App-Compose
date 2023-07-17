@@ -24,5 +24,10 @@
 
     <!--Categories-->
     <string name="categories_my_categories">My categories</string>
+    <string name="categories_enter_category_name">Enter a category name</string>
+    <string name="categories_choose_color">Choose color:</string>
+
+
+    <string name="check_icon">check icon</string>
 
 </resources>

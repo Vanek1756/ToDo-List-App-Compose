@@ -14,8 +14,8 @@ data class CategoryEntity(
     val categoryName: String,
     @ColumnInfo(name = "list_of_tasks")
     var listOfTasks: List<TaskEntity>,
-    @ColumnInfo(name = "category_color_id")
-    val categoryColorId: Int
+    @ColumnInfo(name = "category_color")
+    val categoryColor: String
 ) {
     fun addNewTask(description: String, date: String, time: String, isImportant: Boolean, property: Map<State, Boolean>) {
         val newList = this.listOfTasks.toMutableList()

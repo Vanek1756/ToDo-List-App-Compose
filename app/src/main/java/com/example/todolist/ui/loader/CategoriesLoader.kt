@@ -1,39 +1,50 @@
 package com.example.todolist.ui.loader
 
-import android.graphics.Color
 import com.example.todolist.storage.entity.CategoryEntity
 import com.example.todolist.storage.source.DatabaseCategorySource
 import com.example.todolist.ui.utils.Items
-import com.example.todolist.ui.utils.State
 import com.example.todolist.ui.utils.mapToItemsList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CategoriesLoader @Inject constructor(databaseCategorySource: DatabaseCategorySource) {
+class CategoriesLoader @Inject constructor(private val databaseCategorySource: DatabaseCategorySource) {
 
-    private val categoriesMutableStateFlow: MutableStateFlow<List<Items<*>>> =
+    private val categoriesScreenMutableStateFlow: MutableStateFlow<List<Items<*>>> =
+        MutableStateFlow(emptyList())
+    val categoriesScreenStateFlow = categoriesScreenMutableStateFlow.asStateFlow()
+
+    private val categoriesMutableStateFlow: MutableStateFlow<List<CategoryEntity>> =
         MutableStateFlow(emptyList())
     val categoriesStateFlow = categoriesMutableStateFlow.asStateFlow()
 
-    fun collectCategoriesScreen() {
-        val listOfCategories = mutableListOf<Any>()
-        repeat(5) { index ->
-            val category = CategoryEntity(0, "Category $index", emptyList(), Color.BLUE)
-            repeat(index) {
-                category.addNewTask(
-                    "Task number $it",
-                    "06/06/2023",
-                    "09:4$it",
-                    false,
-                    mutableMapOf(State.DONE to (it % 2 == 0))
-                )
+    fun getInsertFinishStateFlow() = databaseCategorySource.insertFinishStateFlow
+
+    private val scopeIo = CoroutineScope(Dispatchers.IO)
+
+    init {
+        scopeIo.launch {
+            databaseCategorySource.getCategoriesStateFlow().collectLatest {
+                collectCategoriesScreen(it)
             }
-            listOfCategories.add(category)
         }
+    }
+
+    private fun collectCategoriesScreen(categoryEntities: List<CategoryEntity>) {
+        val listOfCategories = mutableListOf<Any>()
+        listOfCategories.addAll(categoryEntities)
         listOfCategories.add(1111)
-        categoriesMutableStateFlow.value = listOfCategories.mapToItemsList()
+        categoriesScreenMutableStateFlow.value = listOfCategories.mapToItemsList()
+        categoriesMutableStateFlow.value = categoryEntities
+    }
+
+    fun createNewCategory(newCategoryName: String, newCategoryColor: String) {
+        databaseCategorySource.insertCategory(newCategoryName, newCategoryColor)
     }
 }

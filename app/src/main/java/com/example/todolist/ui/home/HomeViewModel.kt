@@ -12,8 +12,4 @@ class HomeViewModel @Inject constructor(
 
     fun getCategoriesStateFlow() = homeLoader.homeCategoriesStateFlow
 
-    init {
-        homeLoader.collectHomeScreen()
-    }
-
 }

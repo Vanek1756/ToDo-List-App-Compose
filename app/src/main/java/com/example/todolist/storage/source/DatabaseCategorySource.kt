@@ -24,9 +24,9 @@ class DatabaseCategorySource @Inject constructor(private val databaseCategoryRep
 
     suspend fun getCategoriesStateFlow() = databaseCategoryRepository.getCategory().stateIn(scopeIo)
 
-    fun insertCategory(categoryName: String, categoryColorId: Int) {
+    fun insertCategory(categoryName: String, categoryColor: String) {
         scopeIo.launch {
-            val categoryEntity = CategoryEntity(0, categoryName, emptyList(),categoryColorId)
+            val categoryEntity = CategoryEntity(0, categoryName, emptyList(),categoryColor)
             databaseCategoryRepository.insertCategory(categoryEntity).apply {
                 insertFinishMutableStateFlow.value = categoryEntity
             }
